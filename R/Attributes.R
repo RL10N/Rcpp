@@ -53,15 +53,19 @@ sourceCpp <- function(file = "",
 
     # error if the file extension isn't one supported by R CMD SHLIB
     if (! tools::file_ext(file) %in% c("cc", "cpp")) {          # #nocov start
-        stop("The filename '", basename(file), "' does not have an ",
-             "extension of .cc or .cpp so cannot be compiled.")
+        stop(
+            sprintf(
+                "The filename '%s' does not have an extension of .cc or .cpp so cannot be compiled.",
+                basename(file)))
     }                                                           # #nocov end
 
     # validate that there are no spaces in the path on windows
     if (.Platform$OS.type == "windows") {                       # #nocov start
         if (grepl(' ', basename(file), fixed=TRUE)) {
-            stop("The filename '", basename(file), "' contains spaces. This ",
-                 "is not permitted.")
+            stop(
+                sprintf(
+                    "The filename '%s' contains spaces. This is not permitted.",
+                    basename(file)))
         }                                                       # #nocov end
     }
 
@@ -145,7 +149,7 @@ sourceCpp <- function(file = "",
             if (!is.null(status)) {
                 cat(result, sep = "\n")                         # #nocov start
                 succeeded <- FALSE
-                stop("Error ", status, " occurred building shared library.")
+                stop(sprintf("Error %s occurred building shared library.", status))
             } else if (!file.exists(context$dynlibFilename)) {
                 cat(result, sep = "\n")
                 succeeded <- FALSE
@@ -156,7 +160,7 @@ sourceCpp <- function(file = "",
         }
         else if (!identical(as.character(result), "0")) {       # #nocov start
             succeeded <- FALSE
-            stop("Error ", result, " occurred building shared library.")
+            stop(sprintf("Error %s occurred building shared library.", result))
         } else {
             succeeded <- TRUE                                   # #nocov end
         }
@@ -188,8 +192,8 @@ sourceCpp <- function(file = "",
         source(scriptPath, local = env)
 
     } else if (getOption("rcpp.warnNoExports", default=TRUE)) { # #nocov start
-        warning("No Rcpp::export attributes or RCPP_MODULE declarations ",
-                "found in source")                              # #nocov end
+        warning(
+            "No Rcpp::export attributes or RCPP_MODULE declarations found in source")                              # #nocov end
     }
 
     # source the embeddedR
@@ -463,7 +467,7 @@ compileAttributes <- function(pkgdir = ".", verbose = getOption("verbose")) {
 # setup plugins environment
 .plugins <- new.env()
 
-# built-in C++98 plugin 
+# built-in C++98 plugin
 .plugins[["cpp98"]] <- function() {
     if (getRversion() >= "3.4")         # with recent R versions, R can decide
         list(env = list(USE_CXX98 = "yes"))
@@ -595,11 +599,11 @@ sourceCppFunction <- function(func, isVoid, dll, symbol) {
 .validatePackages <- function(depends, sourceFilename) {
     unavailable <- depends[!depends %in% .packages(all.available=TRUE)]
     if (length(unavailable) > 0) {                              # #nocov start
-        stop(paste("Package '", unavailable[[1]], "' referenced from ",
-                    "Rcpp::depends in source file ",
-                      sourceFilename, " is not available.",
-                      sep=""),
-                call. = FALSE)                                  # #nocov end
+        stop(
+            sprintf(
+                "Package '%s' referenced from Rcpp::depends in source file %s is not available.",
+                unavailable[[1]], sourceFilename),
+            call. = FALSE)                                  # #nocov end
     }
 }
 
@@ -633,9 +637,11 @@ sourceCppFunction <- function(func, isVoid, dll, symbol) {
 
     plugin <- .plugins[[pluginName]]
     if (is.null(plugin))
-        stop("Inline plugin '", pluginName, "' could not be found ",
-             "within the Rcpp package. You should be ",
-             "sure to call registerPlugin before using a plugin.")
+        stop(
+            sprintf(
+                "Inline plugin '%s' could not be found within the Rcpp package. %s",
+                pluginName,
+                "You should be sure to call registerPlugin before using a plugin."))
 
     return(plugin)
 }

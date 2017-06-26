@@ -136,7 +136,7 @@ Rcpp.package.skeleton <- function(name = "anRpackage", list = character(),
     if (length(cpp_files) > 0L) {
         for (file in cpp_files) {
             file.copy(file, src)
-            message(" >> copied ", file, " to src directory" )
+            message(sprintf(" >> copied %s to src directory", file))
         }
     }
 
